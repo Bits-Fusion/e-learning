@@ -10,6 +10,9 @@ import Help from './Help'
 const Page = () => {
   return (
     <>
+      <div className="absolute bottom-3 right-10">
+        <Help />
+      </div>
       <div className="flex items-center justify-center h-screen">
         <div className="absolute -z-10 w-full h-screen">
           <Image
@@ -19,15 +22,15 @@ const Page = () => {
             objectFit="cover"
           />
         </div>
-        <div className="flex flex-row w-8/12 bg-loginbg  rounded-3xl overflow-hidden">
-          <div className="w-1/2 p-3 ">
+        <div className="flex flex-row md:w-8/12  bg-loginbg  rounded-3xl overflow-hidden">
+          <div className="md:w-1/2 m-auto ">
             <Text />
             <Inputs />
             <Links />
           </div>
 
-          <div className="py-10">
-            <Image src={kid} width={400} alt="" />
+          <div className="py-10 px-3  hidden md:flex ">
+            <Image src={kid} alt="" />
           </div>
         </div>
         {/* <div className="bottom-0 right-0">

@@ -2,9 +2,9 @@ import React from 'react'
 
 const Text = () => {
   return (
-      <div className='px-10'>
-      <div className="p-10">  
-             <strong className="text-center">We are glad that you are here</strong></div>
+      <div className=''>
+      <div className="px-10 py-4">  
+             <strong className="">We are glad that you are here</strong></div>
         
     </div>
   )
