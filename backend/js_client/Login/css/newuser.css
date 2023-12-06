@@ -1,0 +1,37 @@
+*{
+
+    margin: 0;
+    padding: 0;
+    color: whitesmoke;
+}
+
+body{
+    background:  #651fff;
+    background-image: url("front-view-cyber-monday-composition.jpg");
+}
+img{
+    display: block;
+    resize: both;
+    
+    margin: 100px;
+}
+
+#validationCustom01{
+    width: 14rem;
+}
+
+#validationCustom02{
+    width: 14rem;
+}
+
+#newUser{
+    margin: 10%;
+    
+
+}
+
+.placer {
+    margin: 15px;
+    margin-bottom: -1;
+    margin-top: -1;
+}
