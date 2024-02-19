@@ -51,7 +51,8 @@ INSTALLED_APPS = [
 
 
     # project apps
-    'auth_api_root'
+    'auth_api_root',
+    'video_api_root'
 ]
 
 MIDDLEWARE = [
