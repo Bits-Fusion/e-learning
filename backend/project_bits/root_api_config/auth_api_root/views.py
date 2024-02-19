@@ -1,107 +1,91 @@
-# rest frame work imports
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, generics
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import (
-	BasePermission, 
-	IsAuthenticatedOrReadOnly,
-	IsAuthenticated
-	)
+import mimetypes
+import os
+from urllib.parse import unquote
 
-# django imports
-from django.contrib.auth import authenticate, login, logout
+
+from django.conf import settings
+from django.http import FileResponse
+
+
+# rest frame work imports
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 
 
 # project imports
 from .models import AuthUserModel as User
-from .validate_password import validate_password
-from .serializer import UserSerializer
+from .serializer import UserSerializer, RegisterSerializer
+
+#-------------------class based views-------------------------
+
+class UserSignUpAPIView(generics.CreateAPIView):
+    """
+    Basic api end point to register a  user
+    """
+    queryset = User
+    serializer_class = RegisterSerializer
+    
+
+class UserInformationRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Basic end point to find a user by user name and send the user back
+    """
+    lookup_field = 'username'
+    queryset = User
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+
+class UserProfileUpdateAPIView(generics.UpdateAPIView):
+    """
+    Api end point to update user after searching it with it's username
+
+    required field include
+
+        username: str
+        password: str
+        email: str
+    
+    other fields are not required
+    """
+    lookup_field = 'username'
+    queryset = User
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
 
-class UserLoginView(APIView):
-    def post(self, request):
-        if request.user.is_authenticated:
-            return Response({'message':'already is authenticated'})
-        email = request.data.get('email')
-        username = request.data.get('user_name')
-        password = request.data.get('password')
-        print(request)
-        user = authenticate(email=email, username=username, password=password)
-        if user:
-            login(request, user)
-            return Response({'message': 'Login successful'})
-        else:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+#-------------------- function based views -----------------------
+    
+
+@api_view(["GET"])
+# @permission_classes([IsAuthenticated])
+def get_media_path(request, path) -> FileResponse:
+    """
+    The get_media_path function is a helper function that takes in the request and
+    path of a file. 
+    
+    It then checks if the file exists, and returns an error message if
+    it does not exist. 
+    
+    If it does exist, it will return an HttpResponse with the
+    correct headers to serve up the media.
+    
+    @param path: Determine the path of the file to be served
+    """
+    
+    if not os.path.exists(f"{settings.MEDIA_ROOT}/music_files/audio/{path}"):
+        return Response("No such file exists.", status=404)
+
+    # Guess the MIME type of a file. Like pdf/docx/xlsx/png/jpeg
+    mimetype, encoding = mimetypes.guess_type(f"{settings.MEDIA_ROOT}/music_files/audio/{path}", strict=True)
+    if not mimetype:
+        mimetype = "text/html"
+
+    # By default, percent-encoded sequences are decoded with UTF-8, and invalid
+    # sequences are replaced by a placeholder character.
         
-
-class UserSignUpView(APIView):
-    def permission_denied(self, request, message=None, code=None):
-        pass
-
-
-    def post(self, request):
-        email = request.data.get('email')
-        username = request.data.get('user_name')
-        first_name = request.data.get('firstname')
-        password = request.data.get('password')
-        password2 = request.data.get('password2')
-        if password2 != password:
-            return Response({'message': 'unmatch password'})
-        elif User.objects.filter(email=email).exists():
-            return Response({'message': 'User with the same email was found'})
-        elif User.objects.filter(user_name=username).exists():
-            return Response({'message': 'User with the same user name was found'})
-        else:
-            temp = validate_password(password)
-            messages = {}
-            if temp:
-                for j, i in enumerate(temp):
-                    messages[f'error {j}'] = i
-                return Response(messages)
-            else:
-                User.objects.create_user(
-                    email = email,
-                    user_name = username,
-                    first_name = first_name,
-                    password = password,
-                    is_active = True,
-                )
-
-        return Response({'message': 'account created'})
-
-
-class UserLogOut(APIView):
-    def post(self, request):
-        if request.user.is_authenticated:
-            logout(request)
-            return Response({'message': 'Loged Out'})
-        return Response({'message': 'user is not loged in'})
-            
-
-class ProfileUpdate(APIView):
-    def post(self, request):
-        if request.user.is_authenticated:
-            instant = User.objects.get(user_name=request.user)
-            username = request.data.get('user_name')
-            password = request.data.get('password')
-            temp = validate_password(password)
-            messages = {}
-            if temp:
-                for j, i in enumerate(temp):
-                    messages[f'password requirment {j}'] = i
-                return Response(messages)
-
-            instant.user_name = username
-            instant.set_password(password)
-            instant.save()
-
-            return Response({'masseage':'updated successful'})
-
-
-@permission_classes([IsAuthenticated])
-class ProfileDamp(generics.ListAPIView):
-	permission_classes = [IsAuthenticated] 
-	queryset = User.objects.all()
-	serializer_class = UserSerializer
-	lookup_field = 'user_name'
+    file_path = unquote(os.path.join(f"{settings.MEDIA_ROOT}/music_files/audio/{path}")).encode("utf-8")
+    
+    return FileResponse(open(file_path, "rb").read(), content_type=mimetype)

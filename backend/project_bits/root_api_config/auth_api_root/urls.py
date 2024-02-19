@@ -1,37 +1,29 @@
-from django.urls import path, include
+# django imports
+from django.urls import path
 
+#3rd party
+from drf_social_oauth2.urls import TokenView
+from drf_social_oauth2.urls import RevokeTokenView
 
-# 3rd party packeges
-from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
-
-# My view applications
+# project view applications
 from .views import (
-    UserLoginView,
-    UserSignUpView,
-    UserLogOut,
-    ProfileUpdate,
-    ProfileDamp
+    UserSignUpAPIView,
+    UserInformationRetrieveAPIView,
+    UserProfileUpdateAPIView,
+    get_media_path,
 )
 
 
 urlpatterns = [
-    # JWt token
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-
     # basic login, sign in and logout pages
-    path('login/', UserLoginView.as_view(), name='login'),
-    path('logout/', UserLogOut.as_view(), name='logout'),
-    path('signup/', UserSignUpView.as_view(), name='signup'),
+    path('signup/', UserSignUpAPIView.as_view(), name='signup'),
+    path('login/' , TokenView.as_view() , name='login'),
 
     # update profile
-    path('profile/update/', ProfileUpdate.as_view(), name='profile_update'),
-    path('profile/<str:user_name>/',  ProfileDamp.as_view(), name='profile_info'),
+    path('profile/update/<str:username>/', UserProfileUpdateAPIView.as_view(), name='profile_update_by_serializer'),
+
+    # dump user information if needed
+    path('profile/<str:username>/',  UserInformationRetrieveAPIView.as_view(), name='profile_info'),
+    path("media/<str:path>", get_media_path, name="get-media-path"),
     
 ]
