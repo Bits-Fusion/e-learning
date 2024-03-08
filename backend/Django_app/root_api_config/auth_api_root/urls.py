@@ -11,13 +11,15 @@ from .views import (
     UserInformationRetrieveAPIView,
     UserProfileUpdateAPIView,
     get_media_path,
+    ValidateToken,
 )
 
 
 urlpatterns = [
-    # basic login, sign in and logout pages
+    # basic login, sign in and token varification pages
     path('signup/', UserSignUpAPIView.as_view(), name='signup'),
     path('login/' , TokenView.as_view() , name='login'),
+    path('validate/', ValidateToken.as_view(), name = 'validate'),
 
     # update profile
     path('profile/update/<str:username>/', UserProfileUpdateAPIView.as_view(), name='profile_update_by_serializer'),
