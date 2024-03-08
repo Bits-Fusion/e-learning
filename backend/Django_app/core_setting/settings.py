@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'core_setting.wsgi.application'
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'bits_project',
+		'NAME': 'bits',
 		'USER': 'root',
 		'PASSWORD': '',
 		'HOST':'localhost',
