@@ -60,7 +60,7 @@ class UserProfileUpdateAPIView(generics.UpdateAPIView):
     queryset = User
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    
+
 
 class ValidateToken(APIView):
     """
