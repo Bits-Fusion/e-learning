@@ -79,10 +79,19 @@ class ValidateToken(APIView):
             try:
                 token_object = AccessToken.objects.get(token=token)
                 if token_object.is_valid():
-                    return Response({'message':True})
+                    return Response({
+                        'message':'Valid token',
+                        'error': False
+                        })
             except:
-                return Response({'message':'This token does not exist in the database'})
-        return Response({'massage':False})
+                return Response({
+                    'message':'This token does not exist in the database',
+                    'error': True
+                    })
+        return Response({
+            'massage':'unknown error',
+            'error':True
+            })
     
 
 #-------------------- function based views -----------------------
